@@ -2,11 +2,11 @@
   This script should get current positions (quantity of each digital asset held) for a Vault
 */
 var axios = require('axios');
-// var apiKey = '058a0ca67b9e197981f2ede775defe334ff10b2815dd62672d12fb7b3a3b2412'; //development
-var apiKey = 'b1257a4cdd1585648b1948efe73f6189315235d2d37b80a41720a048854aea45'; //staging
+// var apiKey = ''; //development
+var apiKey = ''; //staging
 
 async function getPositions(){
-  var url = 'https://api.anchorage-staging.com/v2/vaults';
+  var url = 's';
 
   var positions = {};
 
@@ -16,7 +16,7 @@ async function getPositions(){
     }
   })
   .then((res) => {
-    var baseUrl='https://api.anchorage-staging.com';
+    var baseUrl='';
     var depaginatedData;
     if(res.data.page.next){
       axios.get(baseUrl+res.data.page.next, {
@@ -59,8 +59,8 @@ async function getPositions(){
 }
 
 async function getBalances(){
-  // var url = 'https://api.anchorage-development.com/v2/vaults';
-  var url = 'https://api.anchorage-staging.com/v2/vaults';
+  // var url = '';
+  var url = s';
 
   var balances = {};
 
@@ -98,7 +98,7 @@ async function getBalances(){
 };
 
 async function getSettlementAmount(){
-  var url = 'https://api.anchorage-staging.com/v2/trading/trades';
+  var url = '';
 
   var settlements = [];
 
