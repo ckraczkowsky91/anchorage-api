@@ -1,36 +1,56 @@
 /*
   This script should get current positions (quantity of each digital asset held) for a Vault
 */
-var axios = require('axios');
+const axios = require('axios');
 // var apiKey = '058a0ca67b9e197981f2ede775defe334ff10b2815dd62672d12fb7b3a3b2412'; //development
-var apiKey = 'b1257a4cdd1585648b1948efe73f6189315235d2d37b80a41720a048854aea45'; //staging
+var apiKey = ''; //staging
+const baseUrl = '';
+
+
+async function getAllData(path){
+  const apiKey = '';
+  var query = `${baseUrl}${path}`;
+  const response = await axios.get(query, {headers: {'Api-Access-Key':apiKey}})
+  data = response.data.data;
+  if(response.data.page.next){
+    newPath = response.data.page.next;
+    return data.concat(await getAllData(newPath));
+  } else {
+    return data;
+  }
+}
+
+
 
 async function getPositions(){
-  var url = 'https://api.anchorage-staging.com/v2/vaults';
-
+  var path = '/v2/vaults';
   var positions = {};
+  var total = 0;
 
-  await axios.get(url, {
-    headers: {
-      'Api-Access-Key': apiKey
-    }
-  })
-  .then((res) => {
-    var baseUrl='https://api.anchorage-staging.com';
-    var depaginatedData;
-    if(res.data.page.next){
-      axios.get(baseUrl+res.data.page.next, {
-        headers: {
-          'Api-Access-Key': apiKey
-        }
-      })
-      .then((res) => {
-        console.log(res);
-      })
-    } else {
-      return res;
-    };
-  })
+  const data = await getAllData(path);
+  console.log(data);
+  data.forEach(function(vault) {
+    vault.assets.forEach(function(asset) {
+      if(asset.assetType in positions){
+        value = parseFloat(asset.totalBalance.quantity);
+        positions[asset.assetType] += value;
+      } else {
+        value = parseFloat(asset.totalBalance.quantity);
+        positions[asset.assetType] = value;
+      };
+    });
+  });
+
+  console.log(positions);
+
+  // console.log('\n' + 'Asset' + '\t\t' + 'Quantity');
+  // console.log("=========================");
+  // for(value in positions){
+  //   //total += positions[value];
+  //   console.log(value + "\t\t" + positions[value]);
+  // };
+
+
   .then((res) => {
     var data = res.data.data;
     data.forEach(function(vault) {
@@ -60,7 +80,7 @@ async function getPositions(){
 
 async function getBalances(){
   // var url = 'https://api.anchorage-development.com/v2/vaults';
-  var url = 'https://api.anchorage-staging.com/v2/vaults';
+  var url = '';
 
   var balances = {};
 
@@ -98,7 +118,7 @@ async function getBalances(){
 };
 
 async function getSettlementAmount(){
-  var url = 'https://api.anchorage-staging.com/v2/trading/trades';
+  var url = '';
 
   var settlements = [];
 
