@@ -30,16 +30,18 @@ class AnchorageAuth(requests.auth.AuthBase):
         r.headers[self.SIGNATURE_HEADER] = signature
         r.headers[self.TIMESTAMP_HEADER] = timestamp
         return r
+    def __repr__(self):
+         return "<Response a:%s b:%s>" % (self.a, self.b)
 
 
 # load secrets
 
 # Use the API key generated in the Anchorage Web Dashboard
-access_key = '' #All perms
+access_key = '7ff98d7c74fc0f48dec19648b2dcc93f77de38bbde6687d86547d5c36b942e9a' #All perms
 # access_key = '66d039f3cc486037cc1cbe023484193b40859dad68aafadf34728190e6344843' #Read-Only
 # Use the Ed25519 signing private key
 
-signing_key_str = '' # load the raw string
+signing_key_str = 'eaf5a7d73d82927c46e415f8801e4c4a1add3fb80fa5dd30f4225f30c9d8b783' # load the raw string
 
 signing_key = bytes(bytearray.fromhex(signing_key_str))
 
@@ -47,14 +49,24 @@ data = {}
 
 anchorage_auth = AnchorageAuth(access_key, signing_key)
 #
-r = requests.post("https://api.anchorage-development.com/v2/transfers", json={
-    "sendingVaultId": "f540b977c949d1db8baa16f4653a789e", #from Colin's Vault
-    "assetType": "ETH_R",
-    "destinationVaultId": "8a73ceec76addcea22f85ea3a02ab15b", #to Trading Vault
-    "amount": "0.000003",
-    # "transferMemo": "Colin's test transfer via API #4"
+# r = requests.post("https://api.anchorage-staging.com/v2/transfers", json={
+#     "sendingVaultId": "4bcaf2407dafe7b1fb43ec2399ab8e9a", #from Maker Vault
+#     "assetType": "ETHT",
+#     "destinationVaultId": "e17909b43b085e8626acb6088f087b05", #to Brian Test Vault
+#     "amount": "0.001",
+#     # "transferMemo": "Colin's test transfer via API #4"
+# }, auth=anchorage_auth)
+request = requests.post("https://api.anchorage-staging.com/v2/trading/quote", json={
+"currency": "USD",
+"quantity": "98",
+"side": "BUY",
+"tradingPair": "BTC-USD"
 }, auth=anchorage_auth)
-# r = requests.get("https://api.anchorage-development.com/v2/trading/quote", data=data, auth=anchorage_auth)
+quoteId = request.json()['data']['quoteID']
+accept = requests.post("https://api.anchorage-staging.com/v2/trading/quote/accept", json={
+    "quoteID": quoteId,
+    "side": "BUY"
+}, auth=anchorage_auth)
 # r = requests.post("https://api.anchorage-development.com/v2/transactions/withdrawal", json={
 #     "sendingVaultId": "f540b977c949d1db8baa16f4653a789e",
 #     "assetType": "ETH_R",
@@ -69,4 +81,8 @@ r = requests.post("https://api.anchorage-development.com/v2/transfers", json={
 # }}, auth=anchorage_auth)
 # r = requests.get("https://api.anchorage-development.com/v2/vaults", auth=anchorage_auth)
 
-print(r)
+print(accept)
+
+# in python3...
+# exec(open("generate-signature.py").read())
+# *._content
