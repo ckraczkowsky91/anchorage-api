@@ -37,36 +37,79 @@ class AnchorageAuth(requests.auth.AuthBase):
 # load secrets
 
 # Use the API key generated in the Anchorage Web Dashboard
-access_key = '7ff98d7c74fc0f48dec19648b2dcc93f77de38bbde6687d86547d5c36b942e9a' #All perms
-# access_key = '66d039f3cc486037cc1cbe023484193b40859dad68aafadf34728190e6344843' #Read-Only
-# Use the Ed25519 signing private key
+access_key = ''
 
-signing_key_str = 'eaf5a7d73d82927c46e415f8801e4c4a1add3fb80fa5dd30f4225f30c9d8b783' # load the raw string
+# Use the Ed25519 signing private key
+signing_key_str = ''
+
 
 signing_key = bytes(bytearray.fromhex(signing_key_str))
 
 data = {}
 
 anchorage_auth = AnchorageAuth(access_key, signing_key)
-#
+# VIEW ASSET TYPES
+# r = requests.get("https://api.anchorage-staging.com/v2/asset-types", auth=anchorage_auth)
+# CREATE A TRANSFER
 # r = requests.post("https://api.anchorage-staging.com/v2/transfers", json={
-#     "sendingVaultId": "4bcaf2407dafe7b1fb43ec2399ab8e9a", #from Maker Vault
-#     "assetType": "ETHT",
-#     "destinationVaultId": "e17909b43b085e8626acb6088f087b05", #to Brian Test Vault
-#     "amount": "0.001",
-#     # "transferMemo": "Colin's test transfer via API #4"
+#     # "sendingVaultId": "b1a169a9c8ce886a491d0227cb4dd6c0", #from Group Vault
+#     "assetType": "ZEC_T",
+#     # "destinationVaultId": "6e9079c8348d6d9da993b639151cfc82", #to Test Vault 88
+#     "amount": "7",
+#     "transferMemo": "Vault-to-vault transfer testing",
+#     "source": {
+#         "id":"b1a169a9c8ce886a491d0227cb4dd6c0",
+#         "type":"VAULT"
+#     },
+#     "destination": {
+#         "id": "15d3c458e994b814e3b3644e91f6448b",
+#         "type": "VAULT"
+#     },
+#     "idempotentId": "123460"
 # }, auth=anchorage_auth)
-request = requests.post("https://api.anchorage-staging.com/v2/trading/quote", json={
-"currency": "USD",
-"quantity": "98",
-"side": "BUY",
-"tradingPair": "BTC-USD"
-}, auth=anchorage_auth)
-quoteId = request.json()['data']['quoteID']
-accept = requests.post("https://api.anchorage-staging.com/v2/trading/quote/accept", json={
-    "quoteID": quoteId,
-    "side": "BUY"
-}, auth=anchorage_auth)
+# CREATE A WITHDRAWAL
+# r = requests.post("https://api.anchorage-staging.com/v2/transactions/withdrawal", json={
+# "sendingVaultId": "15d3c458e994b814e3b3644e91f6448b", #Group Vault
+# "assetType": "XTZ",
+# "destinationAddress": "tz1cL3cqxanqtJDPLN4obGLT2NmAQ3ppMvrJ",
+# "amount": "0.000001",
+# "amlResponses": {
+# "destinationType": "EXCHANGE",
+# "institutionName": "string",
+# "withdrawalPurpose": "TRADING"
+# }
+# }, auth=anchorage_auth)
+# CREATE A HOLD
+# r = requests.post("https://api.anchorage-development.com/v2/holds", json={
+#     "amount": "5",
+#     "assetType": "BCH_R",
+#     # "expiresIn": 604800,
+#     # "idempotentId": "6784567",
+#     "memo": "Internal trade ID 0xabc123",
+#     "vaultId": "61d88533c9d8e58ec7ba86b2af38970d"
+# }, auth=anchorage_auth)
+# DELETE A HOLD
+# hold_id = "f9b2935ef27f883e6a8e5a95882a02dedd91675a6325e96550c5c4c35658442b"
+# r = requests.delete("https://api.anchorage-staging.com/v2/holds/" + hold_id, auth=anchorage_auth)
+# EXECUTE A HOLD
+# r = requests.post("https://api.anchorage-staging.com/v2/holds/f253ee07520672d5bc2e394747040e2941449617157bed5d8e6eaacce7dae6cf/execute", json={
+#     "amount": "0.006",
+#     "destinationVaultId": "df3d7b64a434db91ceed8fb9e254cd9c",
+#     "releaseHold": False,
+#     "transferMemo": "Partial execution"
+# }, auth=anchorage_auth)
+# GET A QUOTE
+# r = requests.post("https://api.anchorage-staging.com/v2/trading/quote", json={
+# "currency": "USD",
+# "quantity": "98",
+# "side": "BUY",
+# "tradingPair": "BTC-USD"
+# }, auth=anchorage_auth)
+# ACCEPT A QUOTE
+# r = requests.post("https://api.anchorage-staging.com/v2/trading/quote/accept", json={
+#     "quoteID": "f902afec-a44d-49df-8862-00cbeeb99b43",
+#     "side": "BUY"
+# }, auth=anchorage_auth)
 # r = requests.post("https://api.anchorage-development.com/v2/transactions/withdrawal", json={
 #     "sendingVaultId": "f540b977c949d1db8baa16f4653a789e",
 #     "assetType": "ETH_R",
@@ -80,8 +123,38 @@ accept = requests.post("https://api.anchorage-staging.com/v2/trading/quote/accep
 #         "withdrawalPurposeOther": "string"
 # }}, auth=anchorage_auth)
 # r = requests.get("https://api.anchorage-development.com/v2/vaults", auth=anchorage_auth)
+# CREATE AN ORDER
+# r = requests.post("https://api.anchorage-staging.com/v2/orders", json={
+#     "quantity" : "10",
+#     "assetType": "USDC_T",
+#     "source": {
+#         "id": "25d6cbaa673ce268d0dfbb6bcdc7e510",
+#         "type": "VAULT"
+#     },
+#     # "idempotentId": "567890",
+#     "expiresIn": 604800,
+#     "memo": "ATS order reference",
+#     "counterAssetType" : "BTC",
+#     "side" : "BUY",
+#     "type" : "MKT",
+#     "tif" : "GTC",
+#     "price": "1.23",
+#     "exposure": "4.38",
+#     "time" : "1623422417863.680000"
+# }, auth=anchorage_auth)
+# EXECUTE AN ORDER
+r = requests.post("https://api.anchorage-staging.com/v2/orders/1c0eff112147416cf5fd59101913915099b9ff3684fa949f7b0ba9d05f077b80/execute", json={
+    "quantity" : "0.5",
+    "destination": {
+        "id": "15d3c458e994b814e3b3644e91f6448b",
+        "type": "VAULT"
+    },
+    "releaseOrder": True,
+    # "idempotentId": "234596",
+    "memo": "ATS order reference"
+}, auth=anchorage_auth)
 
-print(accept)
+print(r)
 
 # in python3...
 # exec(open("generate-signature.py").read())

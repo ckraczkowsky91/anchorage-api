@@ -8,7 +8,7 @@ async function getPositions(){
   var positions = {};
   var total = 0;
 
-  const data = await getAllData(path);
+  const data = await getAllData.getAllData(path);
   data.forEach(function(vault) {
     vault.assets.forEach(function(asset) {
       if(asset.assetType in positions){

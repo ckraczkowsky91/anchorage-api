@@ -1,6 +1,7 @@
 const axios = require('axios');
-var apiKey = '3d44d519d002094a5abeb06eaf72aece64f5af4a2d4ece9762c5145d87970620';
-const baseUrl = 'https://api.anchorage-staging.com';
+var apiKey = '';
+// const baseUrl = 'https://api.anchorage-staging.com';
+const baseUrl = 'https://api.anchorage.com';
 
 
 async function getAllData(path){
@@ -12,12 +13,42 @@ async function getAllData(path){
   })
   .catch((err)=>{console.log(err)})
   data = response.data.data;
-  if(response.data.page.next){
-    newPath = response.data.page.next;
-    return data.concat(await getAllData(newPath));
+  if(response.data.page){
+    if(response.data.page.next){
+      newPath = response.data.page.next;
+      return data.concat(await getAllData(newPath));
+    } else {
+      return data;
+    }
   } else {
     return data;
   }
 };
 
-module.exports = getAllData;
+async function getOneItem(path, filter){
+  var query = `${baseUrl}${path}/${filter}`;
+  const response = await axios.get(query, {
+    headers: {
+      'Api-Access-Key': apiKey
+    }
+  });
+  return response;
+};
+
+async function makeMultipleReqs(path, number){
+  var i = 0;
+  const timeout = 20;
+  var data;
+
+  for (i; i < number; i++){
+  // rate limit is 50 requests per second
+  // to make 100 requests I'd need to space them by 20 mseconds
+    setTimeout(()=>{getAllData(path)}, timeout);
+  }
+};
+
+module.exports = {
+  getAllData : getAllData,
+  getOneItem: getOneItem,
+  makeMultipleReqs: makeMultipleReqs
+};

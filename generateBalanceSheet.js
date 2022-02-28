@@ -1,7 +1,7 @@
 /*
   This script should return a balance sheet for an Organization noting the time that it was generated
 */
-const getAllData = require('./utils/getAllData');
+const {getAllData} = require('./utils/getAllData');
 
 async function generateBalanceSheet(){
   const path = '/v2/vaults';
@@ -26,8 +26,12 @@ async function generateBalanceSheet(){
       };
     });
   });
+
+  const fiatPath = '/v2/fiat'
+  const fiatData = await getAllData(fiatPath);
   console.log('\n' + 'Date' + '\t' + 'Asset Type' + '\t' + 'Quantity' + '\t' + 'Unit Price (USD)' + '\t' + 'Total Value (USD)');
   console.log("===========================================================================");
+  console.log(timestamp + '\t' + fiatData[0].assetType + '\t' + fiatData[0].quantity + '\t' + '1' + '\t' + fiatData[0].quantity)
   for(asset in balanceSheet){
     var obj = balanceSheet[asset];
     console.log(timestamp + '\t' + asset + '\t' + obj['quantity'] + '\t' + obj['price'] + '\t' + obj['balance']);
